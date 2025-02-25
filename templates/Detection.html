@@ -1,0 +1,277 @@
+<!doctype html>
+<html lang="en">
+
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>BTDS - Detection</title>
+        <link rel="stylesheet" type="text/css" href="/static/style.css">
+        <link rel="stylesheet" type="text/css" href="/static/chatbot.css">
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link
+            href="https://fonts.googleapis.com/css2?family=Poppins:wght@200&display=swap"
+            rel="stylesheet">
+        <link rel="stylesheet"
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" />
+        <link
+            href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+            rel="stylesheet"
+            integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM"
+            crossorigin="anonymous">
+            <link rel="apple-touch-icon" sizes="76x76" href="static/images/apple-touch-icon.png">
+        <link rel="icon" type="image/png" sizes="32x32"
+            href="static/images/favicon-32x32.png">
+        <link rel="icon" type="image/png" sizes="16x16"
+            href="static/images/favicon-16x16.png">
+        <link rel="manifest" href="static/images/site.webmanifest">
+        <link rel="mask-icon" href="static/images/safari-pinned-tab.svg" color="#5bbad5">
+        <meta name="msapplication-TileColor" content="#da532c">
+        <meta name="theme-color" content="#ffffff">
+        <script src="https://kit.fontawesome.com/b33b219100.js"
+            crossorigin="anonymous"></script>
+
+            <style>
+        
+                #upload-section {
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    margin-bottom: 30px; /* Increased margin */
+                    margin-top: -90px;
+                }
+        
+                #upload-section label {
+                    color: #333;
+                    margin-bottom: 15px; /* Increased margin */
+                    font-size: 18px; /* Increased font size */
+                }
+        
+                #upload-section input[type="file"] {
+                    padding: 15px; /* Increased padding */
+                    border: 3px solid #333; /* Increased border thickness */
+                    border-radius: 8px; /* Increased border radius */
+                    background-color: #fff;
+                    cursor: pointer;
+                    width: 600px; /* Increased width */
+                }
+        
+                #upload-section button {
+                    margin-top: 15px; /* Increased margin */
+                    padding: 10px; /* Increased padding */
+                    text-align: center;
+                    border-radius: 8px; /* Increased border radius */
+                    background-color: #1bbc9b;
+                    color: #fff;
+                    cursor: pointer;
+                    width: 200px; /* Increased width */
+                    
+                }
+        
+                #image-section {
+                    display: flex;
+                    justify-content: space-around;
+                    width: 100%;
+                }
+        
+                .image-box {
+                    position: relative;
+                    width: 370px; /* Increased width */
+                    height: 400px; /* Increased height */
+                    border: 3px solid #333; /* Increased border thickness */
+                    margin: 0;
+                    overflow: hidden;
+                }
+        
+                .image-box img {
+                    width: 100%;
+                    height: 100%;
+                    object-fit: cover;
+                }
+        
+                .progress-indicator {
+                    position: absolute;
+                    top: 50%;
+                    left: 50%;
+                    transform: translate(-50%, -50%);
+                    border: 8px solid #007bff;
+                    border-top: 8px solid #f0f0f0;
+                    border-radius: 50%;
+                    width: 50px;
+                    height: 50px;
+                    animation: spin 1s linear infinite;
+                    display: none;
+                }
+        
+                @keyframes spin {
+                    0% { transform: translate(-50%, -50%) rotate(0deg); }
+                    100% { transform: translate(-50%, -50%) rotate(360deg); }
+                }
+                .prediction{
+                    margin-top: 30px;
+                    text-align: center;
+                    
+                }
+                .prediction p{
+                    font-size: 30px;
+                    color: black;
+                    font-family: 'Poppins', sans-serif;
+                    font-weight: bold;
+                }
+            </style>
+
+    </head>
+
+    <body>
+        <!-- This is Nav Bar -->
+        <header>
+            <nav>
+                <input type="checkbox" id="check">
+                <label for="check" class="checkbtn">
+                    <i class="fas fa-bars"></i>
+                </label>
+                <label class="logo">BTDS</label>
+                <ul id="menu">
+                    <li><a href="/home">Home</a></li>
+                    <li><a href="/detection">Detection</a></li>
+                    <li><a href="/doctors">Doctors</a></li>
+                    <li><a href="/patient_treat">Treatments</a></li>
+                    <li><a href="/blog">Blogs</a></li>
+                    <li><a href="/logout">Logout</a></li>
+                </ul>
+            </nav>
+        </header>
+
+        <!-- Detection -->
+        <main>
+           
+                <div class="heading-box">
+                    <div class="detection-heading">
+                        <p>Uplaod an image to detect a Brain tumor</p>
+                    </div>
+                </div>
+           
+            <div>
+                <form id="upload-section" action="/predict" method="post" enctype="multipart/form-data">
+                    <input type="file" name="file" id="file" accept=".jpg, .jpeg, .png">
+                    <button style="background-color: #1bbc9b;" type="submit" onclick="showProgress()" onmouseover="this.style.backgroundColor='#000'" onmouseout="this.style.backgroundColor='#1bbc9b'">Check Tumor</button>
+
+                </form>
+            
+                {% if message %}
+                    <p>{{ message }}</p>
+                {% endif %}
+            
+                <div id="image-section">
+                    <div class="image-box" id="original-box">
+                        <div class="progress-indicator" id="original-progress"></div>
+                        {% if uploaded_image %}
+                            <h2>Original Image</h2>
+                            <img src="{{ uploaded_image }}" alt="Uploaded Image">
+                        {% endif %}
+                    </div>
+            
+                    <div class="image-box" id="predicted-box">
+                        <div class="progress-indicator" id="predicted-progress"></div>
+                        {% if prediction %}
+                            <h2>Predicted Image</h2>
+                            <img src="{{ uploaded_image }}" alt="Predicted Image">
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            <div class="prediction">
+                <p>Prediction: {{ prediction }}</p>
+                <p>Confidence: {{ confidence }}</p>
+            </div>
+            
+            <script>
+                function showProgress() {
+                    document.getElementById('original-progress').style.display = 'block';
+                    document.getElementById('predicted-progress').style.display = 'block';
+                }
+            </script>
+            
+        </main>
+        <!-- Footer -->
+        <footer class="footer">
+            <div class="container">
+                <div class="row">
+                    <div class="footer-col">
+                        <h2>Location</h2>
+                        <span><h5>Address:</h5>
+                            Pakistan Mardan Charsada Rd,<br>
+                            Mardan City, 23200<br></span>
+                        <span><h5>Phone:</h5>(***) ***-****</span>
+                        <span><h5>Fax:</h5>(***) ***-****</span>
+                    </div>
+                    <div class="footer-col">
+                        <h2>Blog</h2>
+                        <ul>
+                            <li><a href="#">Right Sidebar</a></li>
+                            <li><a href="#">Left Sidebar</a></li>
+                            <li><a href="#">Full Width </a></li>
+                            <li><a href="#">Blog Grid </a></li>
+                            <li><a href="#">Blog Details </a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-col">
+                        <h2>Appointment</h2>
+                        <p>Lorem ipsum dolor, sit amet consectetur<br>
+                            adipisicing elit. nemo obcaecati.</p>
+                        <div class="social-links">
+                            <a href="#"><i class="fab fa-facebook-f"></i></a>
+                            <a href="#"><i class="fab fa-twitter"></i></a>
+                            <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                            <a href="#"><i class="fab fa-google-plus"></i></a>
+                            <a href="#"><i class="fab fa-youtube"></i></a>
+                        </div>
+                    </div>
+                </div>
+
+                <hr>
+                <div class="copyright">
+                    <span>© 2024 BTDS. All rights reserved.</span>
+                </div>
+            </div>
+        </footer>
+       
+
+            
+
+             <script
+             src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
+             integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz"
+             crossorigin="anonymous"></script>
+             <script>
+                document.addEventListener("DOMContentLoaded", function() {
+                    var links = document.querySelectorAll("#menu a");
+                    
+                    // Add click event listener to each link
+                    links.forEach(function(link) {
+                        link.addEventListener("click", function(event) {
+                            // Remove "active" class from all links
+                            links.forEach(function(otherLink) {
+                                otherLink.classList.remove("active");
+                            });
+            
+                            // Add "active" class to the clicked link
+                            this.classList.add("active");
+                        });
+                    });
+            
+                    // Set initial active link based on the current URL path
+                    var currentPath = window.location.pathname;
+                    links.forEach(function(link) {
+                        // Check if the current URL contains the link's href value
+                        if (currentPath.indexOf(link.getAttribute("href")) !== -1) {
+                            link.classList.add("active");
+                        }
+                    });
+                });
+            </script>
+
+    </body>
+
+</html>
+
