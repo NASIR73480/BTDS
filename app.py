@@ -320,9 +320,9 @@ def googleCallback():
         abort(500)  # You can handle the error in a more appropriate way
 
 def send_welcome_email(email):
-    msg = Message("BrainMentor: Your Path to Brain Health and Wellness",
+    msg = Message("BTDS: Your Path to Brain Health and Wellness",
                   recipients=[email])
-    msg.body = "Welcome to BrainMentor! 🧠🌐 Our advanced web app uses Deep Learning and Image Processing to detect brain tumors swiftly. Beyond detection, doctor appointments, and a chatbot for valuable insights. Explore video consultations, physician finders, and more. Your journey to a healthier future starts here!"
+    msg.body = "Welcome to BTDS! 🧠🌐 Our advanced web app uses Deep Learning and Image Processing to detect brain tumors swiftly. Beyond detection, doctor appointments, and a chatbot for valuable insights. Explore video consultations, physician finders, and more. Your journey to a healthier future starts here!"
     mail.send(msg)
 
 @app.route("/google-login")
